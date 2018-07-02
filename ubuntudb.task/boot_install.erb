@@ -1,0 +1,16 @@
+#!ipxe
+echo Razor <%= task.label %> task boot_call
+echo Installation node: <%= node_url  %>
+echo Installation repo: <%= repo_url %>
+sleep 3
+
+cpuid --ext 29 || goto i386
+
+kernel <%= ("tftp://192.168.30.238/linux") %> <%= render_template("kernel_args").strip %> || goto error
+initrd <%= ("tftp://192.168.30.238/initrd.gz") %> || goto error
+boot
+
+:i386
+kernel <%= repo_url("/ubuntu-installer/i386/linux") %> <%= render_template("kernel_args").strip %> || goto error
+initrd <%= repo_url("/ubuntu-installer/i386/initrd.gz") %> || goto error
+boot
